@@ -1,24 +1,31 @@
-#include<bits/stdc++.h>
+#include<iostream>
+#include<algorithm>
 using namespace std;
 
 void title();
+void clear();
+void keluar();
+
 void shoplist();
 void itemlist();
-void order();   //Atau ditaruh di
-void hapusPesanan();
-void additem(); //fungsi shoplist saja
-int removeitem(); 
 void menu();
-void orderlist(int kode, int jumlah, float harga, float total);
+void order();   //Atau ditaruh di
 void tambahPesanan();
-void keluar();
-void clear();
+void hapusPesanan();
 void totalMenu();
+void additem(); //fungsi shoplist saja
+void removeitem(); 
+void orderlist(int kode, string nama, float harga, int n);
 
 void sortlist();
 void sortbycode();
 void sortbyname();
 void sortbyprice();
+
+void searchlist();
+void searchbycode();
+void searchbyname();
+void searchbyprice();
 
 //Misal 
 //dibuat variable globalkah ?
@@ -30,7 +37,7 @@ int total;
 struct Items {
     int kode;
     string nama;
-    int harga;
+    float harga;
 };
 
 Items items[9999];
@@ -49,6 +56,8 @@ int main() {
     title();
     shoplist();
     menu();
+
+    return 0;
 }
 
 //---- Print Banner/Judul Program ---------------------------------
@@ -77,6 +86,7 @@ void menu() {
          << "\t(2) Tambah daftar barang" << endl
          << "\t(3) Hapus barang dari daftar" << endl
          << "\t(4) Urutkan daftar barang" << endl
+         << "\t(5) Cari data barang" << endl << endl
          << "\t(0) Keluar" << endl << endl
          << "\tPilih opsi: ";
 
@@ -97,6 +107,9 @@ void menu() {
         break;
     case 4 :
         sortlist();
+        break;
+    case 5 :
+        searchlist();
         break;
     case 0 :
         clear();
@@ -133,20 +146,20 @@ void shoplist() {
 //---- Menu Pemesanan Barang --------------------------------------
 
 void order(){
-  	int kode, n, hargaBarang;
+  	int kodeBarang, hargaBarang, n;
     bool found = false;
     float harga;
     string namaBarang;
 
 	cout << "\n\tMasukkan data barang yang akan dipesan:" << endl;
   	cout << "\n\tKode barang: ";
-  	cin >> kode;
+  	cin >> kodeBarang;
 
   	cout << "\tJumlah: ";
   	cin >> n;
     
     for(int i = 0; i < banyaklist; i++) {
-        if(kode == items[i].kode) {
+        if(kodeBarang == items[i].kode) {
             found = true;
             harga = items[i].harga * n;
           	total = total + harga; //Var total harus global variable ?  
@@ -158,10 +171,11 @@ void order(){
   	// float harga = items[kode-1].harga * n;
   	// total = total + harga; //Var total harus global variable ?
     if(found) {
-        cout << "\n\tNama barang\t= " << namaBarang << endl;
-        cout << "\tHarga\t\t= Rp " << hargaBarang  << " * " << n << "\n\t\t\t= Rp " << harga << endl << endl;
-        cout << "\tTotal belanja\t= Rp " << total << endl;
-        cout << "\n\t-----------------------------------------" << endl;
+        orderlist(kodeBarang, namaBarang, hargaBarang, n);
+        // cout << "\n\tNama barang\t= " << namaBarang << endl;
+        // cout << "\tHarga\t\t= Rp " << hargaBarang  << " * " << n << "\n\t\t\t= Rp " << harga << endl << endl;
+        // cout << "\tTotal belanja\t= Rp " << total << endl;
+        // cout << "\n\t-----------------------------------------" << endl;
         tambahPesanan();
     }
     else if (!found) {
@@ -206,6 +220,7 @@ void tambahPesanan() {
 
     clear();
     shoplist();
+
 
     switch(s) {
     case 1 :
@@ -256,18 +271,47 @@ void totalMenu() {
     }
 }
 
-//---- Daftar Barang Yang Telah Dipesan ---------------------------
+//---- Daftar Barang Yang Telah Dipesan --------------------------- (belum fungsional)
 
-// void orderlist(int kode, int jumlah, float harga, float total) {
-//     cout << "\n\tPesanan Anda:" << endl;
-//     cout << "\t" << kode << "\t" << jumlah << "\t" << harga << "\t" << total << endl; 
-// }
+int orderKe;
+
+void orderlist(int kode, string nama, float harga, int n) {
+    struct Pesan {
+        int kodePesan;
+        string namaPesan;
+        float hargaPesan;
+        int nPesan; 
+        float totalPesan;
+        float belanjaPesan;
+    };
+    Pesan pesan[9999];
+
+    total = harga * n;
+    
+    cout << "Ke: " << orderKe << endl;
+    pesan[orderKe].kodePesan = kode;
+    pesan[orderKe].namaPesan = nama;
+    pesan[orderKe].hargaPesan = harga;
+    pesan[orderKe].nPesan = n;
+    pesan[orderKe].totalPesan = total;
+    orderKe++;
+
+    cout << "\n\t------------- Pesanan Anda: -------------" << endl;
+    cout << "\n\tKode\tNama\tHarga(Rp)\tJumlah\tTotal(Rp)" << endl;
+
+    for(int i = 0; i < orderKe; i++) {
+        cout << "\t" << pesan[i].kodePesan << "\t" << pesan[i].namaPesan << "\t" << pesan[i].hargaPesan << "\t\t" << pesan[i].nPesan << "\t" << pesan[i].totalPesan << endl;
+    }
+    
+    cout << "\n\t-----------------------------------------" << endl;
+}
+
 
 //---- Menambahkan Barang Ke Daftar Stok Barang -------------------
 
 int newKode;
 string newItem;
-int newHarga;
+float newHarga;
 
 void additem(){
 	cout<<"\n\tMasukan data barang yang akan ditambahkan ke daftar barang:" << endl;
@@ -312,7 +356,7 @@ void additem(){
 
 //---- Menghapus Barang Dari Daftar Stok Barang -------------------
 
-int removeitem() {
+void removeitem() {
     string removeItem;
     bool removed = false;
     cout<<"\n\tMasukan data barang yang akan dihapus dari daftar barang:" << endl;
@@ -324,12 +368,14 @@ int removeitem() {
     for (int i = 0; i < banyaklist; i++) {
         if(items[i].nama == removeItem) {
             removed = true;
+            items[i].kode = {};
             items[i].nama = {};
             items[i].harga = {};
             banyaklist--;
             for(int j = i; j < banyaklist; j++) {
                 items[j].nama = items[j+1].nama;
                 items[j].harga = items[j+1].harga;
+                items[j].kode = items[j+1].kode;
             }
         }
     }
@@ -350,7 +396,7 @@ void sortlist() {
     cout << "\n\tUrutkan daftar barang berdasarkan:" << endl << endl
          << "\t(1) Kode barang" << endl
          << "\t(2) Nama barang" << endl
-         << "\t(3) Harga barang" << endl
+         << "\t(3) Harga barang" << endl << endl
          << "\t(0) Kembali ke menu utama" << endl << endl
          << "\tPilih opsi: ";
 
@@ -392,8 +438,8 @@ void sortbycode() {
     clear();
     shoplist();
 
-    cout << "\n\t-----------------------------------------" << endl;
     cout << "\n\tDaftar berhasil diurutkan berdasarkan kode barang" << endl;
+    cout << "\n\t-----------------------------------------" << endl;
     menu();
 }
 
@@ -408,8 +454,8 @@ void sortbyname() {
     clear();
     shoplist();
 
-    cout << "\n\t-----------------------------------------" << endl;
     cout << "\n\tDaftar berhasil diurutkan berdasarkan nama barang" << endl;
+    cout << "\n\t-----------------------------------------" << endl;
     menu();
 }
 
@@ -424,10 +470,150 @@ void sortbyprice() {
     clear();
     shoplist();
 
-    cout << "\n\t-----------------------------------------" << endl;
     cout << "\n\tDaftar berhasil diurutkan berdasarkan harga barang" << endl;
+    cout << "\n\t-----------------------------------------" << endl;
     menu();
 }
+
+
+//---- Menu Pencarian Barang -------------------------------------
+
+void searchlist() {
+    int search;
+
+    cout << "\n\tCari data barang berdasarkan:" << endl << endl
+         << "\t(1) Kode barang" << endl
+         << "\t(2) Nama barang" << endl
+         << "\t(3) Harga barang" << endl << endl
+         << "\t(0) Kembali ke menu utama" << endl << endl
+         << "\tPilih opsi: ";
+
+    cin >> search;
+
+    clear();
+    shoplist();
+
+    switch(search) {
+    case 1 :
+        searchbycode();
+        break;
+    case 2 :
+        searchbyname();
+        break;
+    case 3 :
+        searchbyprice();
+        break;
+    case 0 :
+        title();
+        menu();
+        return;
+    default :
+        cout << "\n\tInput anda salah. Mohon coba lagi." << endl;
+        searchlist();
+    }
+}
+
+//---- Algoritma Pencarian Barang Berdasarkan Parameter Pilihan --
+
+// ---- Pencarian Berdasarkan Kode
+void searchbycode() {
+    int carikode;
+    bool found = false;
+    
+    clear();
+    shoplist();
+    
+    cout << "\n\tMasukkan kode barang yang ingin dicari: ";
+    cin >> carikode;
+
+    for(int i = 0; i < banyaklist; i++) {
+        if(carikode == items[i].kode) {
+            found = true;
+        }
+    }
+
+    if(found) {
+        cout << "\n\tData barang dengan kode (" << carikode << ") ditemukan" << endl;
+        cout << "\n\tKode\tNama Barang\t\tHarga(Rp)" << endl;
+        for(int i = 0; i < banyaklist; i++) {
+            if(carikode == items[i].kode) {
+                cout << "\t" << items[i].kode << "\t" << items[i].nama << "\t\t\t" << items[i].harga << endl;
+            }
+        }
+    }
+    else cout << "\n\tData barang dengan kode (" << carikode << ") tidak ditemukan" << endl;
+    
+    cout << "\n\t-----------------------------------------" << endl;
+    searchlist();
+}
+
+
+// ---- Pencarian Berdasarkan Nama
+void searchbyname() {
+    string carinama;
+    bool found = false;
+    
+    clear();
+    shoplist();
+    
+    cout << "\n\tMasukkan nama barang yang ingin dicari: ";
+    cin >> carinama;
+
+    for(int i = 0; i < banyaklist; i++) {
+        if(carinama == items[i].nama) {
+            found = true;
+        }
+    }
+
+    if(found) {
+        cout << "\n\tData barang dengan nama \"" << carinama << "\" ditemukan" << endl;
+        cout << "\n\tKode\tNama Barang\t\tHarga(Rp)" << endl;
+        for(int i = 0; i < banyaklist; i++) {
+            if(carinama == items[i].nama) {
+                cout << "\t" << items[i].kode << "\t" << items[i].nama << "\t\t\t" << items[i].harga << endl;
+            }
+        }
+    }
+    else cout << "\n\tData barang dengan nama \"" << carinama << "\" tidak ditemukan" << endl;
+    
+    cout << "\n\t-----------------------------------------" << endl;
+    searchlist();
+}
+
+
+// ---- Pencarian Berdasarkan Harga
+void searchbyprice() {
+    int cariharga;
+    bool found = false;
+    
+    clear();
+    shoplist();
+    
+    cout << "\n\tMasukkan harga barang yang ingin dicari: ";
+    cin >> cariharga;
+
+    for(int i = 0; i < banyaklist; i++) {
+        if(cariharga == items[i].harga) {
+            found = true;
+        }
+    }
+
+    if(found) {
+        cout << "\n\tData barang dengan harga Rp " << cariharga << " ditemukan" << endl;
+        cout << "\n\tKode\tNama Barang\t\tHarga(Rp)" << endl;
+        for(int i = 0; i < banyaklist; i++) {
+            if(cariharga == items[i].harga) {
+                cout << "\t" << items[i].kode << "\t" << items[i].nama << "\t\t\t" << items[i].harga << endl;
+            }
+        }
+    }
+    else cout << "\n\tData barang dengan harga Rp " << cariharga << " tidak ditemukan" << endl;
+    
+    cout << "\n\t-----------------------------------------" << endl;
+    searchlist();
+}
+
+
 
 //---- Print Akhir dari Program -----------------------------------
 
