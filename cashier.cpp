@@ -240,7 +240,7 @@ void printorder() {
     cout << "\n\t-------------------------------------------------" << endl;
 }
 
-//---- Mengurangi Barang yang Telah Dipesan ----------------------- (belum fungsional)
+//---- Mengurangi Barang yang Telah Dipesan -----------------------
 
 void hapusPesanan() {
     int removeJumlah, removeCode;
@@ -424,17 +424,19 @@ void additem(){
 //---- Menghapus Barang Dari Daftar Stok Barang -------------------
 
 void removeitem() {
-    string removeItem;
+    int removeItem;
+    string namaBarang;
     bool removed = false;
     cout<<"\n\tMasukan data barang yang akan dihapus dari daftar barang:" << endl;
-	cout<<"\n\tNama Barang: ";
+	cout<<"\n\tKode Barang: ";
     cin >> removeItem;
 
     clear();
 
     for (int i = 0; i < banyaklist; i++) {
-        if(items[i].nama == removeItem) {
+        if(items[i].kode == removeItem) {
             removed = true;
+            namaBarang = items[i].nama;
             items[i].kode = {};
             items[i].nama = {};
             items[i].harga = {};
@@ -449,8 +451,8 @@ void removeitem() {
 
     shoplist();
     
-    if(removed) cout << "\n\t" << removeItem << " berhasil dihapus dari daftar barang" << endl;
-    else cout << "\n\t" << removeItem << " tidak ditemukan dalam daftar barang" << endl;
+    if(removed) cout << "\n\t" << namaBarang << " berhasil dihapus dari daftar barang" << endl;
+    else cout << "\n\tBarang dengan kode (" << removeItem << ") tidak ditemukan dalam" << endl;
     cout << "\n\t-------------------------------------------------" << endl;
     menu();
 }
@@ -552,7 +554,7 @@ void searchlist() {
          << "\t(1) Kode Barang" << endl
          << "\t(2) Nama Barang" << endl
          << "\t(3) Harga Barang" << endl << endl
-         << "\t(0) Kembali ke Menu Pencarian" << endl << endl
+         << "\t(0) Kembali ke Menu Utama" << endl << endl
          << "\tPilih Opsi: ";
 
     cin >> search;
@@ -571,7 +573,7 @@ void searchlist() {
         searchbyprice();
         break;
     case 0 :
-        searchlist();
+        menu();
         break;
     default :
         cout << "\n\tInput anda salah. Mohon coba lagi." << endl;
@@ -601,6 +603,7 @@ void searchbycode() {
     if(found) {
         clear();
         cout << "\n\tData barang dengan kode (" << carikode << ") ditemukan" << endl;
+        cout << "\n\t-------------------------------------------------" << endl;
         cout << "\n\tKode\tNama Barang\t\tHarga(Rp)" << endl;
         for(int i = 0; i < banyaklist; i++) {
             if(carikode == items[i].kode) {
@@ -669,6 +672,7 @@ void searchbyprice() {
     if(found) {
         clear();
         cout << "\n\tData barang dengan harga Rp " << cariharga << " ditemukan" << endl;
+    cout << "\n\t-------------------------------------------------" << endl;
         cout << "\n\tKode\tNama Barang\t\tHarga(Rp)" << endl;
         for(int i = 0; i < banyaklist; i++) {
             if(cariharga == items[i].harga) {
@@ -689,6 +693,6 @@ void searchbyprice() {
 void keluar() {
     title();
     cout << "\t--------------------------------------------------" << endl;
-    cout << "\n\tTerima Kasih Telah Menggunakan Program Ini" << endl;
+    cout << "\n\t    Terima Kasih Telah Menggunakan Program Ini" << endl;
     cout << "\n\t--------------------------------------------------" << endl << endl;
 }
