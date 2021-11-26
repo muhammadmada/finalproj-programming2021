@@ -51,7 +51,7 @@ int main() {
     clear();
     title();
 
-    cout << "\tTekan Enter untuk Melanjutkan ";
+    cout << "\t\tTekan Enter untuk Melanjutkan ";
     cin.get();
     
     itemlist();
@@ -67,10 +67,10 @@ int main() {
 //---- Print Banner/Judul Program ---------------------------------
 
 void title(){
-    cout << "\t\t __________________   ____" << endl
-         << "\t\t/_  __/  _/_  __/ /  / __/" << endl
-         << "\t\t / / _/ /  / / / /__/ _/" << endl
-         << "\t\t/_/ /___/ /_/ /____/___/" << endl << endl;
+    cout << "\t  ________   ______ __   __________   ____  __  ________" << endl
+         << "\t / ___/ _ | / __/ // /  /  _/_  __/  / __ \\/ / / /_  __/" << endl
+         << "\t/ /__/ __ |_\\ \\/ _  /  _/ /  / /    / /_/ / /_/ / / /   " << endl
+         << "\t\\___/_/ |_/___/_//_/  /___/ /_/     \\____/\\____/ /_/    " << endl << endl;
 }
 
 //---- Print Selamat Datang ---------------------------------------
