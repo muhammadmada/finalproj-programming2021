@@ -1,5 +1,6 @@
 #include<iostream>
 #include<algorithm>
+#include<fstream>
 using namespace std;
 
 void title();
@@ -10,11 +11,11 @@ void keluar();
 void shoplist();
 void itemlist();
 void menu();
-void order();   //Atau ditaruh di
+void order();
 void tambahPesanan();
 void hapusPesanan();
 void totalMenu();
-void additem(); //fungsi shoplist saja
+void additem();
 void removeitem(); 
 void orderlist(int kode, string nama, float harga, int n);
 void resetlist();
@@ -22,19 +23,21 @@ void printorder();
 
 void sortlist();
 void sortbycode();
+void sortbycodeDesc();
 void sortbyname();
+void sortbynameDesc();
 void sortbyprice();
+void sortbypriceDesc();
 
 void searchlist();
 void searchbycode();
 void searchbyname();
 void searchbyprice();
 
-//Misal 
-//dibuat variable globalkah ?
-int banyaklist = 3; //Banyak daftar barang + 1 setiap fungsi additem dipanggil ?
-// float price[9999]={1000,2000,3000,4000,5000}; // size price juga ?
-// string nama[9999]={"alpha","beta","gamma","delta","epsilon"};
+void writeList();
+void readList();
+
+int banyaklist;
 int total;
 
 struct Items {
@@ -48,13 +51,16 @@ Items items[9999];
 //---- Fungsi Main ------------------------------------------------
 
 int main() {
+    ifstream f("list.txt");
+    for (string line; getline(f,line);){
+        banyaklist++;
+    }    
     clear();
     title();
 
     cout << "\t\tTekan Enter untuk Melanjutkan ";
     cin.get();
-    
-    itemlist();
+    readList();
     clear();
     title();
     welcome();
@@ -88,9 +94,8 @@ void clear() {
 
 //---- Menu Utama -------------------------------------------------
 
-void menu() { 
+void menu() {
     int s;
-
     cout << "\n\tApa yang ingin Anda lakukan?" << endl << endl
          << "\t(1) Pemesanan Barang" << endl
          << "\t(2) Tambah Daftar Barang" << endl
@@ -102,24 +107,27 @@ void menu() {
 
     cin >> s;
 
-    clear();
+    clear();    
     shoplist();
-
     switch(s) {
     case 1 :
         order();
         break;
     case 2 :
         additem();
+        writeList();
         break;
     case 3 :
         removeitem();
+        writeList();
         break;
     case 4 :
         sortlist();
+        writeList();
         break;
     case 5 :
         searchlist();
+        writeList();
         break;
     case 0 :
         clear();
@@ -131,17 +139,10 @@ void menu() {
     }
 }
 
-//---- Deklarasi Daftar Barang ------------------------------------
-
-void itemlist() {
-    items[0] = {103, "beta", 3000};
-    items[1] = {102, "alpha", 1000};
-    items[2] = {101, "gamma", 2000};
-}
-
 //---- Print Tabel Daftar Barang ----------------------------------
 
 void shoplist() {
+    readList();
     cout << "\n\t----------------- Daftar Barang -----------------" << endl << endl;
 
     cout << "\tKode\tNama Barang\t\tHarga(Rp)" << endl;
@@ -411,9 +412,8 @@ void additem(){
         items[banyaklist].kode = newKode;
         items[banyaklist].nama = newItem;
         items[banyaklist].harga = newHarga;
-
         banyaklist++;
-        
+        writeList();
         clear();
         shoplist();
         cout << "\n\t" << newItem << " berhasil ditambahkan" << endl;
@@ -457,6 +457,24 @@ void removeitem() {
     menu();
 }
 
+//---- Menyimpan List-----
+void writeList(){
+    ofstream fout;
+    fout.open("list.txt");
+    for (int i=0;i<banyaklist;i++){
+        fout<<items[i].kode<<"\t"<<items[i].nama<<"\t"<<items[i].harga<<"\n";
+    }
+}
+//---- Membaca list -----
+void readList(){
+    ifstream fin;
+    fin.open("list.txt");
+    for (int i=0;i<banyaklist;i++){
+        fin>>items[i].kode>>items[i].nama>>items[i].harga;
+    }
+    fin.close();
+}
+
 //---- Menu Pengurutan Barang di Tabel ----------------------------
 
 void sortlist() {
@@ -465,7 +483,10 @@ void sortlist() {
     cout << "\n\tUrutkan daftar barang berdasarkan:" << endl << endl
          << "\t(1) Kode Barang" << endl
          << "\t(2) Nama Barang" << endl
-         << "\t(3) Harga Barang" << endl << endl
+         << "\t(3) Harga Barang" << endl
+         << "\t(4) Kode Barang (Descending)"<<endl
+         << "\t(5) Nama Barang (Descending)"<<endl
+         << "\t(6) Harga Barang (Descending)"<<endl<<endl
          << "\t(0) Kembali ke Menu Utama" << endl << endl
          << "\tPilih Opsi: ";
 
@@ -484,6 +505,15 @@ void sortlist() {
     case 3 :
         sortbyprice();
         break;
+    case 4 :
+        sortbycodeDesc();
+        break;
+    case 5 :
+        sortbynameDesc();
+        break;
+    case 6 :
+        sortbypriceDesc();
+        break;        
     case 0 :
         title();
         menu();
@@ -502,12 +532,27 @@ bool comparecode(Items a, Items b) {
     return a.kode < b.kode;
 }
 
+bool comparecodeDesc(Items a, Items b) {
+    return a.kode > b.kode;
+}
+
 void sortbycode() {
     sort(items, items+banyaklist, comparecode);
     clear();
+    writeList();
     shoplist();
 
     cout << "\n\tDaftar berhasil diurutkan berdasarkan kode barang" << endl;
+    cout << "\n\t-------------------------------------------------" << endl;
+    menu();
+}
+void sortbycodeDesc() {
+    sort(items, items+banyaklist, comparecodeDesc);
+    clear();
+    writeList();
+    shoplist();
+
+    cout << "\n\tDaftar berhasil diurutkan berdasarkan kode barang (Descending)" << endl;
     cout << "\n\t-------------------------------------------------" << endl;
     menu();
 }
@@ -517,26 +562,41 @@ void sortbycode() {
 bool comparename(Items a, Items b) {
     return a.nama < b.nama;
 }
-
+bool comparenameDesc(Items a, Items b) {
+    return a.nama > b.nama;
+}
 void sortbyname() {
     sort(items, items+banyaklist, comparename);    
     clear();
+    writeList();
     shoplist();
 
     cout << "\n\tDaftar berhasil diurutkan berdasarkan nama barang" << endl;
     cout << "\n\t-------------------------------------------------" << endl;
     menu();
 }
+void sortbynameDesc() {
+    sort(items, items+banyaklist, comparenameDesc);    
+    clear();
+    writeList();
+    shoplist();
 
+    cout << "\n\tDaftar berhasil diurutkan berdasarkan nama barang (Descending)" << endl;
+    cout << "\n\t-------------------------------------------------" << endl;
+    menu();
+}
 // ---- Sorting Berdasarkan Harga ----
 
 bool compareprice(Items a, Items b) {
     return a.harga < b.harga;
 }
-
+bool comparepriceDesc(Items a, Items b) {
+    return a.harga > b.harga;
+}
 void sortbyprice() {
     sort(items, items+banyaklist, compareprice);    
     clear();
+    writeList();
     shoplist();
 
     cout << "\n\tDaftar berhasil diurutkan berdasarkan harga barang" << endl;
@@ -544,6 +604,16 @@ void sortbyprice() {
     menu();
 }
 
+void sortbypriceDesc() {
+    sort(items, items+banyaklist, comparepriceDesc);    
+    clear();
+    writeList();
+    shoplist();
+
+    cout << "\n\tDaftar berhasil diurutkan berdasarkan harga barang" << endl;
+    cout << "\n\t-------------------------------------------------" << endl;
+    menu();
+}
 
 //---- Menu Pencarian Barang -------------------------------------
 
