@@ -448,7 +448,7 @@ void removeitem() {
             }
         }
     }
-
+    writeList();
     shoplist();
     
     if(removed) cout << "\n\t" << namaBarang << " berhasil dihapus dari daftar barang" << endl;
